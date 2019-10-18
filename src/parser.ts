@@ -1,4 +1,4 @@
-import { TextDocument, CompletionItem, CompletionItemKind, Position } from 'vscode';
+import { TextDocument, CompletionItem, CompletionItemKind, Position, CompletionContext } from 'vscode';
 
 const mutationObjReg = /\.\.\.mapMutations\(\{([^\}]*)/;
 const mutationArrReg = /\.\.\.mapMutations\(\[([^\]]*)/;
@@ -54,8 +54,7 @@ function matchMapObj(text: string, reg: RegExp) {
     return [];
 }
 
-function parseVarMaps(text: string): CompletionItem[] {
-    // const arrayIndex = text.indexOf('mapState([');
+function parseVarMaps(text: string, prefix: string): CompletionItem[] {
     let arrayItems:any[] = [];
     let objectItems: any[] = [];
     let itemKind: CompletionItemKind;
@@ -69,13 +68,13 @@ function parseVarMaps(text: string): CompletionItem[] {
 
         arrayItems.forEach(item => {
             let newItem = new CompletionItem(item, itemKind);
-            newItem.insertText = 'this.' + item;
+            newItem.insertText = prefix + item;
             completionItems.push(newItem);
         });
 
         objectItems.forEach(item => {
             let newItem = new CompletionItem(item.substring(0, item.indexOf(':')), itemKind);
-            newItem.insertText = 'this.' + newItem.label;
+            newItem.insertText = prefix + newItem.label;
             completionItems.push(newItem);
         });
     });
@@ -83,16 +82,20 @@ function parseVarMaps(text: string): CompletionItem[] {
     return completionItems;
 }
 
-export function parseMaps(document: TextDocument, position: Position): CompletionItem[] {
+export function parseMaps(document: TextDocument, position: Position, context: string): CompletionItem[] {
     let start = Date.now();
     let line: any = document.lineAt(position).text.substr(0, position.character);
     line = line.trim().split(/\s+/);
     line = line[line.length - 1];
     let list = line.split('.');
-    console.log(list);
-    
+
+    if (context === 'this' && (list.length !== 2 || list[0] !== 'this')) {
+        return [];
+    }
+
+    const prefix = context === 'this' ? '' : 'this.';
     let text = document.getText();
-    let items = parseVarMaps(text);
+    let items = parseVarMaps(text, prefix);
     
     let end = Date.now();
     console.log('Start: ' + start + 'ms End: ' + end + 'ms');

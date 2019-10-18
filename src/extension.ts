@@ -9,11 +9,18 @@ import { parseMaps } from './parser';
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.languages.registerCompletionItemProvider({scheme: 'file', language: 'vue'}, {
-        provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken) {
-            return parseMaps(document, position);
+        provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext) {
+            return parseMaps(document, position, 'this');
         },
     },
         '.'
+    ));
+
+    context.subscriptions.push(vscode.languages.registerCompletionItemProvider({scheme: 'file', language: 'vue'}, {
+        provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext) {
+            return parseMaps(document, position, '');
+        },
+    }
     ));
 }
     
