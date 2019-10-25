@@ -1,55 +1,73 @@
 import { TextDocument, CompletionItem, CompletionItemKind, Position, CompletionContext } from 'vscode';
-
-const mutationObjReg = /\.\.\.mapMutations\(\{([^\}]*)/;
-const mutationArrReg = /\.\.\.mapMutations\(\[([^\]]*)/;
-const actionObjReg = /\.\.\.mapActions\(\{([^\}]*)/;
-const actionArrReg = /\.\.\.mapActions\(\[([^\]]*)/;
-const getterObjReg = /\.\.\.mapGetters\(\{([^\}]*)/;
-const getterArrReg = /\.\.\.mapGetters\(\[([^\]]*)/;
-const stateObjReg = /\.\.\.mapState\(\{([^\}]*)/;
-const stateArrReg = /\.\.\.mapState\(\[([^\]]*)/;
+import { MapXxxReg, MapActionsReg, MapMutationsReg, MapGettersReg, MapStateReg } from './reg';
 
 const mapReg = [
     {
-        arr: stateArrReg,
-        obj: stateObjReg,
+        reg: MapStateReg,
         kind: CompletionItemKind.Variable
     },
     {
-        arr: getterArrReg,
-        obj: getterObjReg,
+        reg: MapGettersReg,
         kind: CompletionItemKind.Value
     },
     {
-        arr: actionArrReg,
-        obj: actionObjReg,
+        reg: MapActionsReg,
         kind: CompletionItemKind.Function
     },
     {
-        arr: mutationArrReg,
-        obj: mutationObjReg,
+        reg: MapMutationsReg,
         kind: CompletionItemKind.Method
     },
 ];
 
 
 
-function matchMapArr(text: string, reg: RegExp) {
-    const arrayMatch = text.match(reg) || [];
+function matchMapArr(text: string, reg: MapXxxReg) {
+    const arrayMatch = text.match(reg.findAllArrayMaps) || [];
+    // const arrayMatch = reg.exec(text) || [];
     
-    if (typeof arrayMatch[1] !== 'undefined') {
-        return arrayMatch[1].match(/\w+/g) || [];
+    let stringsToMatch: any[] = [];
+    
+    if (typeof arrayMatch[0] !== 'undefined') {
+        arrayMatch.forEach(match => {
+            let stringsMatch = match.match(reg.findStringsFromArrayMaps) || [];
+            
+            if (typeof stringsMatch[1] !== 'undefined') {
+                stringsToMatch.push(stringsMatch[1]);
+            }
+        });
+        let matches: string[] = [];
+
+        stringsToMatch.forEach(match => {
+            matches = matches.concat(match.match(/\w+/g));
+        });
+        return matches;
     }
     
     return [];
 }
 
-function matchMapObj(text: string, reg: RegExp) {
-    const objectMatch = text.match(reg) || [];
+function matchMapObj(text: string, reg: MapXxxReg) {
+    const arrayMatch = text.match(reg.findaAllObjectMaps) || [];
+    // const arrayMatch = reg.exec(text) || [];
+    let stringsToMatch: any[] = [];
+    
+    if (typeof arrayMatch[0] !== 'undefined') {
+        arrayMatch.forEach(match => {
+            let stringsMatch = match.match(reg.findStringsFromObjectMaps) || [];
+            
+            if (typeof stringsMatch[1] !== 'undefined') {
+                stringsToMatch.push(stringsMatch[1]);
+            }
+        });
+        let matches: string[] = [];
 
-    if (typeof objectMatch[1] !== 'undefined') {
+        stringsToMatch.forEach(match => {
+            matches = matches.concat(match.match(/[\w]+(?=:)/g));
+        });
+        // return objectMatch[1].match(/[\w]+(?=:)/g) || [];
 
-        return objectMatch[1].match(/[\w]+:/g) || [];
+        return matches;
     }
     return [];
 }
@@ -60,10 +78,10 @@ function parseVarMaps(text: string, prefix: string): CompletionItem[] {
     let itemKind: CompletionItemKind;
     
     let completionItems: CompletionItem[] = [];
-
+    
     mapReg.forEach(mapType => {
-        arrayItems = matchMapArr(text, mapType.arr);
-        objectItems = matchMapObj(text, mapType.obj);
+        arrayItems = matchMapArr(text, mapType.reg);
+        objectItems = matchMapObj(text, mapType.reg);
         itemKind = mapType.kind;
 
         arrayItems.forEach(item => {
@@ -77,23 +95,30 @@ function parseVarMaps(text: string, prefix: string): CompletionItem[] {
             newItem.insertText = prefix + newItem.label;
             completionItems.push(newItem);
         });
+
     });
 
     return completionItems;
 }
 
-export function parseMaps(document: TextDocument, position: Position, context: string): CompletionItem[] {
+export function parseMaps(document: TextDocument, position: Position, context: CompletionContext, completionType: string): CompletionItem[] {
+    let trigger = context.triggerCharacter || 'other';
     let start = Date.now();
+
+    /* Allows for typing this.xxx to access mapXxx members */
     let line: any = document.lineAt(position).text.substr(0, position.character);
     line = line.trim().split(/\s+/);
     line = line[line.length - 1];
     let list = line.split('.');
-
-    if (context === 'this' && (list.length !== 2 || list[0] !== 'this')) {
+    
+    if (completionType === 'this' && (list.length !== 2 || list[0] !== 'this')) {
+        let end = Date.now();
+        console.log('Start: ' + start + 'ms End: ' + end + 'ms');
+        console.log('Cost: ' + (end - start) + 'ms');
         return [];
     }
-
-    const prefix = context === 'this' ? '' : 'this.';
+    
+    const prefix = trigger === '.' ? '' : 'this.';
     let text = document.getText();
     let items = parseVarMaps(text, prefix);
     

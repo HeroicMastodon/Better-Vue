@@ -10,7 +10,7 @@ import { parseMaps } from './parser';
 export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.languages.registerCompletionItemProvider({scheme: 'file', language: 'vue'}, {
         provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext) {
-            return parseMaps(document, position, 'this');
+            return parseMaps(document, position, context, 'this');
         },
     },
         '.'
@@ -18,7 +18,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(vscode.languages.registerCompletionItemProvider({scheme: 'file', language: 'vue'}, {
         provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext) {
-            return parseMaps(document, position, '');
+            return parseMaps(document, position, context, '');
         },
     }
     ));
