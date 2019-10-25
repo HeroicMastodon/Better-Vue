@@ -1,27 +1,25 @@
 {
 	"name": "bettervue",
 	"displayName": "BetterVue",
-    "description": "Better mapXxx intellisense for single file components in Vue",
-    "version": "0.0.1",
-    "publisher": "heroic-mastodon",
+	"description": "Better mapXxx intellisense for single file components in Vue",
+	"version": "0.1.0",
+	"publisher": "heroic-mastodon",
 	"engines": {
 		"vscode": "^1.39.0"
 	},
 	"categories": [
 		"Other"
-    ],
-    "keywords": [
-        "Vue",
-        "vue",
-        "vuejs"
-    ],
+	],
+	"keywords": [
+		"Vue",
+		"vue",
+		"vuejs"
+	],
 	"activationEvents": [
-        "onLanguage:vue"
+		"onLanguage:vue"
 	],
 	"main": "./out/extension.js",
-	"contributes": {
-		
-	},
+	"contributes": {},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
 		"compile": "tsc -p ./",
@@ -39,17 +37,17 @@
 		"typescript": "^3.3.1",
 		"tslint": "^5.12.1",
 		"vscode-test": "^1.2.0"
-    },
-    "languages": [
-        {
-            "id": "vue",
-            "aliases": [
-              "Vue",
-              "vue"
-            ],
-            "extensions": [
-              ".vue"
-            ]
-        }
-    ]
+	},
+	"languages": [
+		{
+			"id": "vue",
+			"aliases": [
+				"Vue",
+				"vue"
+			],
+			"extensions": [
+				".vue"
+			]
+		}
+	]
 }
