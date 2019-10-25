@@ -41,6 +41,11 @@ This extension is still a work in progress.
 
 Work in progress release.
 
+### 0.1.1
+
+Added compatability with namespaced modules.
+You can either type the name of what you want to access or start with "this.".
+
 
 
 -----------------------------------------------------------------------------------------------------------

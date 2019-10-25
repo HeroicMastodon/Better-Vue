@@ -85,13 +85,21 @@ function parseVarMaps(text: string, prefix: string): CompletionItem[] {
         itemKind = mapType.kind;
 
         arrayItems.forEach(item => {
+            if (item === "") {
+                return;
+            }
+
             let newItem = new CompletionItem(item, itemKind);
             newItem.insertText = prefix + item;
             completionItems.push(newItem);
         });
 
         objectItems.forEach(item => {
-            let newItem = new CompletionItem(item.substring(0, item.indexOf(':')), itemKind);
+            if (item === "") {
+                return;
+            }
+            
+            let newItem = new CompletionItem(item/* .substring(0, item.indexOf(':')) */, itemKind);
             newItem.insertText = prefix + newItem.label;
             completionItems.push(newItem);
         });
