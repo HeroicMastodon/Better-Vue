@@ -118,15 +118,17 @@ export function parseMaps(document: TextDocument, position: Position, context: C
     line = line.trim().split(/\s+/);
     line = line[line.length - 1];
     let list = line.split('.');
+
+    console.log('completion type: ' + completionType);
     
-    if (completionType === 'this' && (list.length !== 2 || list[0] !== 'this')) {
+    if (completionType === 'this' && (list.length !== 2 || list[0] !== 'this' || trigger !== '.')) {
         let end = Date.now();
         console.log('Start: ' + start + 'ms End: ' + end + 'ms');
         console.log('Cost: ' + (end - start) + 'ms');
         return [];
     }
     
-    const prefix = trigger === '.' ? '' : 'this.';
+    const prefix = completionType === 'this' ? '' : 'this.';
     let text = document.getText();
     let items = parseVarMaps(text, prefix);
     
