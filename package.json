@@ -2,7 +2,7 @@
 	"name": "bettervue",
 	"displayName": "BetterVue",
 	"description": "Better mapXxx intellisense for single file components in Vue",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"publisher": "heroic-mastodon",
 	"engines": {
 		"vscode": "^1.39.0"
