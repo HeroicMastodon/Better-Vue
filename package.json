@@ -1,6 +1,6 @@
 {
-	"name": "bettervue",
-	"displayName": "BetterVue",
+	"name": "vuemapxintellisense",
+	"displayName": "VueMapXIntellisense",
 	"description": "Better mapXxx intellisense for single file components in Vue",
 	"version": "0.1.21",
 	"publisher": "heroic-mastodon",
