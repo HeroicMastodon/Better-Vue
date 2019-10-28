@@ -1,5 +1,5 @@
 {
-	"name": "vuemapxintellisense",
+	"name": "bettervue",
 	"displayName": "VueMapXIntellisense",
 	"description": "Better mapXxx intellisense for single file components in Vue",
 	"version": "0.1.22",

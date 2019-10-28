@@ -46,6 +46,10 @@ Work in progress release.
 Added compatability with namespaced modules.
 You can either type the name of what you want to access or start with "this.".
 
+### 0.1.23
+
+Bug fixes
+
 
 
 -----------------------------------------------------------------------------------------------------------
